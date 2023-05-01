@@ -29,3 +29,24 @@ def genero_list(request):
             return JsonResponse(serializer.data, status=201)
         # Si los datos no son válidos, retornar una respuesta con error
         return JsonResponse(serializer.errors, status=400)
+    
+@api_view(['GET', 'PUT', 'DELETE'])
+def genero_detail(request, id):
+    try:
+        genero = GeneroLibro.objects.get(id=id)
+    except GeneroLibro.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = GeneroLibroSerializer(genero)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'PUT':
+        serializer = GeneroLibroSerializer(genero, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        genero.delete()
+        return JsonResponse({'message': 'GeneroLibro eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)

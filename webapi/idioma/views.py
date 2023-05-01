@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.response import Response
+from rest_framework import status
 from webapi.models import Idioma
 from webapi.serializers import IdiomaSerializer
 
@@ -27,3 +29,24 @@ def idioma_list(request):
             return JsonResponse(serializer.data, status=201)
         # Si los datos no son válidos, retornar una respuesta con error
         return JsonResponse(serializer.errors, status=400)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def idioma_detail(request, id):
+    try:
+        autor = Idioma.objects.get(id=id)
+    except Idioma.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = IdiomaSerializer(autor)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'PUT':
+        serializer = IdiomaSerializer(autor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        autor.delete()
+        return JsonResponse({'message': 'Idioma eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)

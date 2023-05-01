@@ -1,9 +1,12 @@
+from django.shortcuts import render
+
 from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from webapi.models import Editorial
 from webapi.serializers import EditorialSerializer
 from rest_framework.response import Response
+from rest_framework import status
 from django.http import JsonResponse 
 
 @api_view(['GET', 'POST'])
@@ -27,3 +30,24 @@ def editorial_list(request):
             return JsonResponse(serializer.data, status=201)
         # Si los datos no son válidos, retornar una respuesta con error
         return JsonResponse(serializer.errors, status=400)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def editorial_detail(request, id):
+    try:
+        editorial = Editorial.objects.get(id=id)
+    except Editorial.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = EditorialSerializer(editorial)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'PUT':
+        serializer = EditorialSerializer(editorial, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        editorial.delete()
+        return JsonResponse({'message': 'Editorial eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)
