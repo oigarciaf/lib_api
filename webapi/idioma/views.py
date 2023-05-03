@@ -33,20 +33,20 @@ def idioma_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def idioma_detail(request, id):
     try:
-        autor = Idioma.objects.get(id=id)
+        idioma = Idioma.objects.get(id=id)
     except Idioma.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = IdiomaSerializer(autor)
+        serializer = IdiomaSerializer(idioma)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'PUT':
-        serializer = IdiomaSerializer(autor, data=request.data)
+        serializer = IdiomaSerializer(idioma, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
-        autor.delete()
+        idioma.delete()
         return JsonResponse({'message': 'Idioma eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)
