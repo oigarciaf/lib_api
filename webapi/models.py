@@ -4,13 +4,6 @@ from django.db import models
 
 # Create your models here.
 
-
-class Autor(models.Model):
-    descripcion = models.CharField(max_length=50)
-    
-    def __str__(self):
-        return self.descripcion
-    
 class Editorial(models.Model):
     descripcion  = models.CharField(max_length=50)
     
@@ -29,12 +22,19 @@ class Idioma(models.Model):
     def __str__(self):
         return self.descripcion
 
+class Autor(models.Model):
+    id_idioma = models.ForeignKey(Idioma, on_delete=models.CASCADE, null=True, blank=True)
+    descripcion = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.id_idioma + " " + self.descripcion
+
 class Libro(models.Model):
     id_autor = models.ForeignKey(Autor, on_delete=models.CASCADE)
     id_editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
     id_genero_libro = models.ForeignKey(GeneroLibro, on_delete=models.CASCADE)
     id_idioma = models.ForeignKey(Idioma, on_delete=models.CASCADE)
-    codigo = models.CharField(max_length=20)
+    codigo = models.CharField(max_length=20, null=True, blank=True)
     titulo = models.CharField(max_length=100)
     edicion = models.IntegerField()
     year_publicacion = models.IntegerField()

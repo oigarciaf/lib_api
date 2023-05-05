@@ -1,11 +1,6 @@
 from rest_framework import serializers
 from .models import Libro, Autor, Editorial, GeneroLibro, Idioma, Estudiante
 
-class AutorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Autor
-        fields = ('id', 'descripcion')
-
 class EditorialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Editorial
@@ -20,6 +15,11 @@ class IdiomaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Idioma
         fields = ('id', 'descripcion')
+
+class AutorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Autor
+        fields = ('id', 'descripcion', 'id_idioma')
 
 class LibroSerializer(serializers.ModelSerializer):
     class Meta:
